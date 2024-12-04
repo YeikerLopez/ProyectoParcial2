@@ -1,0 +1,135 @@
+/* Barra superior */
+.div-top {
+  background-color: #cc0000;  
+  height: 40px; /* Altura de la barra superior */
+  width: 100%;  /* Ocupa todo el ancho de la página */
+  position: fixed; /* Fija la barra en la parte superior */
+  top: 0;
+  z-index: 10; /* Coloca la barra encima del navbar */
+}
+
+/* Estilos del navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  margin-top: 40px; /* Ajusta para que no quede detrás de la barra superior */
+  background-color: #222222;
+  color: white;
+  position: sticky;
+  top: 40px; /* Para que el navbar sea fijo después de la barra superior */
+  z-index: 9;
+}
+
+/* Botón de Cerrar Sesión */
+.navbar-auth button {
+  padding: 0.5rem 1rem;
+  background-color: #cc0000; /* Rojo para coincidir con el tema */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar-auth button:hover {
+  background-color: #ff3333; /* Un rojo más claro al pasar el mouse */
+  transform: scale(1.05); /* Efecto de zoom suave */
+}
+
+.navbar-auth button:active {
+  background-color: #990000; /* Rojo más oscuro al hacer clic */
+  transform: scale(0.95); /* Efecto de clic */
+}
+
+
+/* Logo */
+.navbar-logo img {
+  height: 45px;
+  width: auto;
+}
+
+.navbar-logo a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* Enlaces */
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.navbar-links a:hover {
+  background-color: #ffffff;
+  color: black;
+}
+
+/* Botones de autenticación */
+.navbar-auth {
+  display: flex;
+  gap: 0.8rem; /* Espacio entre los botones */
+  align-items: center;
+}
+
+.navbar-auth a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* Estilos para el botón de iniciar sesión */
+.navbar-auth a:first-child {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.navbar-auth a:first-child:hover {
+  background-color: white;
+  color: black;
+  transform: scale(1.05); /* Efecto de zoom suave */
+}
+
+/* Estilos para el botón de registrarse */
+.navbar-auth a:last-child {
+  background-color: #ff9900;
+  color: #003366;
+  font-weight: bold;
+}
+
+.navbar-auth a:last-child:hover {
+  background-color: #ffa733;
+  color: white;
+  transform: scale(1.05); /* Efecto de zoom suave */
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .navbar-auth {
+    flex-direction: column;
+    gap: 0.5rem; /* Espacio reducido en columnas */
+  }
+
+  .navbar-auth a {
+    width: 100%; /* Los botones ocupan todo el ancho */
+    text-align: center;
+  }
+}

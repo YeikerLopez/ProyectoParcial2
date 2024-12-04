@@ -1,0 +1,192 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Juan Pérez",
+      "email": "juan@example.com",
+      "password": "password123",
+      "type": "student"
+    },
+    {
+      "id": "2",
+      "name": "María López",
+      "email": "maria@example.com",
+      "password": "password123",
+      "type": "tutor"
+    },
+    {
+      "id": "3",
+      "name": "Empresa XYZ",
+      "email": "info@xyz.com",
+      "password": "password123",
+      "type": "company"
+    },
+    {
+      "id": "314d",
+      "name": "Jean Pierre",
+      "email": "correo1@gmail.com",
+      "password": "123456",
+      "type": "student"
+    },
+    {
+      "id": "709b",
+      "name": "Jose Luis",
+      "email": "joseluis@gmail.com",
+      "password": "123456",
+      "type": "student"
+    },
+    {
+      "id": "5f5b",
+      "name": "yeiker lopez",
+      "email": "yeiker@gmail.com",
+      "password": "123456",
+      "type": "student"
+    },
+    {
+      "id": "b066",
+      "name": "Netflix Latam",
+      "email": "Netflix@gmail.com",
+      "password": "password123",
+      "type": "company"
+    }
+  ],
+  "applications": [
+    {
+      "id": "f933",
+      "studentId": "1",
+      "companyId": 3,
+      "curriculum": {
+        "nombre": "JAUN PEREZ ",
+        "estudios": "ASD",
+        "experiencia": "ASD",
+        "habilidades": "DS",
+        "sobreMi": "SAD"
+      },
+      "status": "accepted",
+      "studentName": "Juan Pérez",
+      "submittedAt": "2024-12-02T04:37:26.952Z",
+      "tutorId": "2",
+      "tutorName": "María López",
+      "acceptedAt": "2024-12-02T04:37:48.423Z"
+    },
+    {
+      "id": "6aa0",
+      "studentId": "314d",
+      "companyId": 3,
+      "curriculum": {
+        "nombre": "Luis Mendoza",
+        "estudios": "asdas",
+        "experiencia": "asdasd",
+        "habilidades": "asdasd",
+        "sobreMi": "asdasd"
+      },
+      "status": "accepted",
+      "studentName": "Jean Pierre",
+      "submittedAt": "2024-12-02T17:18:45.807Z",
+      "tutorId": "2",
+      "tutorName": "María López",
+      "acceptedAt": "2024-12-02T17:24:03.558Z"
+    },
+    {
+      "id": "0cbf",
+      "studentId": "709b",
+      "companyId": 3,
+      "curriculum": {
+        "nombre": "Jose Luis",
+        "estudios": "asdasd",
+        "experiencia": "asdasd",
+        "habilidades": "asdasd",
+        "sobreMi": "asdasd"
+      },
+      "status": "accepted",
+      "studentName": "Jose Luis",
+      "submittedAt": "2024-12-02T18:03:10.245Z",
+      "tutorId": "2",
+      "tutorName": "María López",
+      "acceptedAt": "2024-12-02T18:05:53.173Z"
+    },
+    {
+      "id": "e79a",
+      "studentId": "5f5b",
+      "companyId": null,
+      "curriculum": {
+        "nombre": "yeiker alexander lopez pachay",
+        "estudios": "tercero de soft",
+        "experiencia": "nada",
+        "habilidades": "xd",
+        "sobreMi": "xd"
+      },
+      "status": "accepted",
+      "studentName": "yeiker lopez",
+      "submittedAt": "2024-12-03T14:19:24.267Z",
+      "tutorId": "2",
+      "tutorName": "María López",
+      "acceptedAt": "2024-12-03T14:21:15.134Z"
+    }
+  ],
+  "internships": [
+    {
+      "id": "a9df",
+      "applicationId": "f933",
+      "studentId": "1",
+      "companyId": "3",
+      "startDate": "2024-12-02T04:37:48.429Z",
+      "loggedHours": 0,
+      "workLog": [],
+      "status": "active"
+    },
+    {
+      "id": "767c",
+      "applicationId": "6aa0",
+      "studentId": "314d",
+      "companyId": "3",
+      "startDate": "2024-12-02T17:24:03.565Z",
+      "loggedHours": 14,
+      "workLog": [
+        {
+          "date": "2024-12-02T17:25:02.750Z",
+          "hours": 4,
+          "description": "TRABAJO COMPUTACIONAL"
+        },
+        {
+          "date": "2024-12-03T02:03:57.673Z",
+          "hours": 10,
+          "description": "trabaje en x programa"
+        }
+      ],
+      "status": "active"
+    },
+    {
+      "id": "f265",
+      "applicationId": "0cbf",
+      "studentId": "709b",
+      "companyId": "3",
+      "startDate": "2024-12-02T18:05:53.179Z",
+      "loggedHours": 3,
+      "workLog": [
+        {
+          "date": "2024-12-02T18:08:47.684Z",
+          "hours": 3,
+          "description": "DISEÑO GRAFICO\n"
+        }
+      ],
+      "status": "active"
+    },
+    {
+      "id": "c3a5",
+      "applicationId": "e79a",
+      "studentId": "5f5b",
+      "companyId": "b066",
+      "startDate": "2024-12-03T14:21:15.149Z",
+      "loggedHours": 10,
+      "workLog": [
+        {
+          "date": "2024-12-03T14:21:59.716Z",
+          "hours": 10,
+          "description": "una pagina web"
+        }
+      ],
+      "status": "active"
+    }
+  ]
+}

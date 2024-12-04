@@ -1,0 +1,214 @@
+.student-dashboard {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.student-dashboard h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.internship-status,
+.application-status,
+.application-form {
+  margin-top: 2rem;
+}
+
+.status-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.company-info {
+  margin-bottom: 1.5rem;
+}
+
+.company-info h4 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.hours-progress {
+  margin: 1.5rem 0;
+}
+
+.progress-bar {
+  background-color: #e9ecef;
+  border-radius: 4px;
+  height: 20px;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: var(--secondary-color);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.log-hours-section {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.log-hours-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.submit-button {
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #e68a00;
+}
+
+.work-log {
+  margin-top: 2rem;
+}
+
+.log-list {
+  list-style: none;
+  padding: 0;
+}
+
+.log-item {
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.log-description {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background-color: #ffd700;
+  color: #000;
+}
+
+.status-badge.approved {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.status-badge.rejected {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.status-badge.accepted {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.curriculum-preview {
+  margin-top: 1.5rem;
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.curriculum-details {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.curriculum-details p {
+  margin: 0;
+}
+
+.curriculum-details strong {
+  color: var(--primary-color);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.no-logs {
+  text-align: center;
+  color: #666;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+

@@ -1,0 +1,225 @@
+.company-dashboard {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--white-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.company-dashboard h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+
+.welcome-message {
+  color: var(--light-text-color);
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.dashboard-section {
+  margin-bottom: 3rem;
+}
+
+.dashboard-section h3 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  border-bottom: 3px solid var(--secondary-color);
+  padding-bottom: 0.7rem;
+}
+
+.applications-list ul,
+.internships-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.application-item,
+.internship-item {
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.3s ease;
+}
+
+.application-item:hover,
+.internship-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.application-header,
+.internship-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.application-header h4,
+.internship-header h4 {
+  color: var(--primary-color);
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.approval-info,
+.date-info {
+  color: var(--light-text-color);
+  font-size: 0.95rem;
+}
+
+.curriculum-details {
+  background-color: var(--white-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.curriculum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.curriculum-field {
+  margin-bottom: 1rem;
+}
+
+.curriculum-field strong {
+  display: block;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.offer-button {
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.offer-button:hover {
+  background-color: #e68a00;
+  transform: translateY(-2px);
+}
+
+.reject-button {
+  background-color: #f63e50; /* Rojo para rechazo */
+  color: var(--white-color);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.reject-button:hover {
+  background-color: #b82d3a; /* Un tono más oscuro para hover */
+  transform: translateY(-2px);
+}
+
+.progress-bar {
+  background-color: #e9ecef;
+  border-radius: 4px;
+  height: 20px;
+  margin: 1rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: var(--secondary-color);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.work-log {
+  margin-top: 1.5rem;
+}
+
+.log-list {
+  list-style: none;
+  padding: 0;
+}
+
+.log-item {
+  background-color: var(--white-color);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  color: var(--light-text-color);
+  font-size: 0.9rem;
+}
+
+.log-description {
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--light-text-color);
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 2rem;
+}
+
+.no-data {
+  text-align: center;
+  color: var(--light-text-color);
+  padding: 2rem;
+  background-color: var(--background-color);
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .company-dashboard {
+    padding: 1rem;
+  }
+
+  .curriculum-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .offer-button,
+  .reject-button {
+    width: 100%;
+    padding: 1rem;
+  }
+}
