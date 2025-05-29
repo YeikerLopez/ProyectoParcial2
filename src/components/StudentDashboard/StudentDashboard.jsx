@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import './StudentDashboard.css';
+
+// Constantes para URL de la API y horas requeridas (mejora la legibilidad y mantenimiento)
+const API_BASE_URL = 'http://localhost:3001';
+const REQUIRED_INTERNSHIP_HOURS = 180;
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -18,43 +22,75 @@ const StudentDashboard = () => {
   const [selectedCompany, setSelectedCompany] = useState('');
   const [horasTrabajadas, setHorasTrabajadas] = useState('');
   const [descripcionTrabajo, setDescripcionTrabajo] = useState('');
+  const [error, setError] = useState(null); // Nuevo estado para manejar errores de forma visible
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+  // Función para mostrar mensajes al usuario (reemplaza alert)
+  const showUserMessage = (message, type = 'info') => {
+    // Aquí puedes integrar una librería de toasts (ej. react-toastify)
+    // o un modal personalizado para mensajes más amigables.
+    // Por ahora, usamos console.log para no modificar la UI directamente.
+    console.log(`${type.toUpperCase()}: ${message}`);
+    // En una app real, aquí se actualizaría un estado para mostrar un toast/modal
+    if (type === 'error') {
+      setError(message);
+    } else {
+      setError(null);
+    }
+  };
 
-        // Fetch companies
-        const companiesResponse = await fetch('http://localhost:3001/users?type=company');
-        const companiesData = await companiesResponse.json();
-        setCompanies(companiesData);
+  // useCallback para memorizar fetchData y evitar renders innecesarios
+  const fetchData = useCallback(async () => {
+    if (!user?.id) { // Asegurarse de que el usuario.id exista antes de buscar datos
+      setLoading(false);
+      return;
+    }
 
-        // Check for existing application
-        const applicationResponse = await fetch(
-          `http://localhost:3001/applications?studentId=${user.id}&_sort=id&_order=desc&_limit=1`
-        );
-        const applicationData = await applicationResponse.json();
-        if (applicationData.length > 0) {
-          setApplication(applicationData[0]);
-        }
+    try {
+      setLoading(true);
+      setError(null); // Limpiar errores anteriores
 
-        // Check for active internship
-        const internshipResponse = await fetch(
-          `http://localhost:3001/internships?studentId=${user.id}&status=active&_expand=application`
-        );
-        const internshipData = await internshipResponse.json();
-        if (internshipData.length > 0) {
-          setActiveInternship(internshipData[0]);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
+      // 1. Obtener empresas
+      const companiesResponse = await fetch(`${API_BASE_URL}/users?type=company`);
+      if (!companiesResponse.ok) throw new Error('Error al obtener las empresas.');
+      const companiesData = await companiesResponse.json();
+      setCompanies(companiesData);
+
+      // 2. Verificar postulaciones existentes
+      const applicationResponse = await fetch(
+        `${API_BASE_URL}/applications?studentId=${user.id}&_sort=id&_order=desc&_limit=1`
+      );
+      if (!applicationResponse.ok) throw new Error('Error al obtener la postulación.');
+      const applicationData = await applicationResponse.json();
+      if (applicationData.length > 0) {
+        setApplication(applicationData[0]);
+      } else {
+        setApplication(null); // Asegurar que no haya aplicación si no se encuentra ninguna
       }
-    };
 
+      // 3. Verificar pasantías activas
+      const internshipResponse = await fetch(
+        `${API_BASE_URL}/internships?studentId=${user.id}&status=active&_expand=application`
+      );
+      if (!internshipResponse.ok) throw new Error('Error al obtener la pasantía activa.');
+      const internshipData = await internshipResponse.json();
+      if (internshipData.length > 0) {
+        setActiveInternship(internshipData[0]);
+      } else {
+        setActiveInternship(null); // Asegurar que no haya pasantía activa si no se encuentra ninguna
+      }
+
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      showUserMessage(`Error al cargar los datos: ${err.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]); // user.id es la única dependencia que debe ser verificada
+
+  // Ejecutar fetchData al montar el componente o cuando user.id cambie
+  useEffect(() => {
     fetchData();
-  }, [user.id]);
+  }, [fetchData]); // Dependencia del useCallback
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,23 +99,36 @@ const StudentDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Limpiar errores antes de enviar
+
     if (!selectedCompany) {
-      alert('Por favor, seleccione una empresa');
+      showUserMessage('Por favor, seleccione una empresa', 'error');
+      return;
+    }
+
+    // Validaciones básicas del currículum (puedes añadir más)
+    if (!curriculum.nombre || !curriculum.estudios) {
+      showUserMessage('Por favor, complete al menos su nombre y estudios.', 'error');
       return;
     }
 
     try {
+      const company = companies.find((c) => c.id === parseInt(selectedCompany));
+      if (!company) {
+        throw new Error('Empresa seleccionada no válida.');
+      }
+
       const applicationData = {
         studentId: user.id,
         companyId: parseInt(selectedCompany),
         curriculum: curriculum,
         status: 'pending',
         studentName: user.name,
-        companyName: companies.find((c) => c.id === parseInt(selectedCompany))?.name,
+        companyName: company.name, // Acceso más seguro al nombre de la empresa
         submittedAt: new Date().toISOString(),
       };
 
-      const response = await fetch('http://localhost:3001/applications', {
+      const response = await fetch(`${API_BASE_URL}/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,41 +136,58 @@ const StudentDashboard = () => {
         body: JSON.stringify(applicationData),
       });
 
-      if (response.ok) {
-        const newApplication = await response.json();
-        setApplication(newApplication);
-        alert('Postulación enviada con éxito');
-        setCurriculum({
-          nombre: '',
-          estudios: '',
-          experiencia: '',
-          habilidades: '',
-          sobreMi: '',
-        });
-        setSelectedCompany('');
-      } else {
-        throw new Error('Error al enviar la postulación');
+      if (!response.ok) {
+        throw new Error('Error al enviar la postulación. Por favor, intente de nuevo.');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error al enviar la postulación');
+
+      const newApplication = await response.json();
+      setApplication(newApplication);
+      showUserMessage('Postulación enviada con éxito', 'success');
+      // Refrescar datos después de una postulación exitosa para asegurar consistencia
+      fetchData();
+      // Limpiar el formulario
+      setCurriculum({
+        nombre: '',
+        estudios: '',
+        experiencia: '',
+        habilidades: '',
+        sobreMi: '',
+      });
+      setSelectedCompany('');
+    } catch (err) {
+      console.error('Error al enviar la postulación:', err);
+      showUserMessage(`Error al enviar la postulación: ${err.message}`, 'error');
     }
   };
 
   const handleLogHours = async (e) => {
     e.preventDefault();
-    if (!activeInternship) return;
+    setError(null); // Limpiar errores antes de enviar
+
+    if (!activeInternship) {
+      showUserMessage('No hay una pasantía activa para registrar horas.', 'error');
+      return;
+    }
+
+    const hours = parseInt(horasTrabajadas);
+    if (isNaN(hours) || hours <= 0 || hours > 24) { // Validación de horas
+      showUserMessage('Por favor, ingrese un número válido de horas (1-24).', 'error');
+      return;
+    }
+    if (!descripcionTrabajo.trim()) { // Validación de descripción
+      showUserMessage('Por favor, ingrese una descripción del trabajo realizado.', 'error');
+      return;
+    }
 
     try {
-      const hours = parseInt(horasTrabajadas);
       const newLogEntry = {
         date: new Date().toISOString(),
         hours: hours,
-        description: descripcionTrabajo,
+        description: descripcionTrabajo.trim(), // Eliminar espacios en blanco
       };
 
       const response = await fetch(
-        `http://localhost:3001/internships/${activeInternship.id}`,
+        `${API_BASE_URL}/internships/${activeInternship.id}`,
         {
           method: 'PATCH',
           headers: {
@@ -134,36 +200,45 @@ const StudentDashboard = () => {
         }
       );
 
-      if (response.ok) {
-        const updatedInternship = await response.json();
-        setActiveInternship(updatedInternship);
-        setHorasTrabajadas('');
-        setDescripcionTrabajo('');
-        alert('Horas registradas con éxito');
-      } else {
-        throw new Error('Error al registrar las horas');
+      if (!response.ok) {
+        throw new Error('Error al registrar las horas. Por favor, intente de nuevo.');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error al registrar las horas');
+
+      const updatedInternship = await response.json();
+      setActiveInternship(updatedInternship);
+      showUserMessage('Horas registradas con éxito', 'success');
+      // Limpiar el formulario de horas
+      setHorasTrabajadas('');
+      setDescripcionTrabajo('');
+    } catch (err) {
+      console.error('Error al registrar las horas:', err);
+      showUserMessage(`Error al registrar las horas: ${err.message}`, 'error');
     }
   };
 
-  if (loading) {
-    return <div className="loading">Cargando...</div>;
+  if (!user) { // Manejar el caso donde no hay usuario logeado
+    return <div className="student-dashboard">Por favor, inicie sesión para ver su panel.</div>;
   }
 
-  if (activeInternship) {
-    return (
-      <div className="student-dashboard">
-        <h2>Panel de Estudiante</h2>
+  if (loading) {
+    return <div className="loading">Cargando datos del panel...</div>;
+  }
+
+  return (
+    <div className="student-dashboard">
+      <h2>Panel de Estudiante</h2>
+
+      {error && <div className="error-message">{error}</div>} {/* Mostrar errores aquí */}
+
+      {activeInternship ? (
         <div className="internship-status">
           <h3>Pasantía Activa</h3>
           <div className="status-card">
             <div className="company-info">
-            <h4>
-              Empresa: {companies.length > 0 ? companies[0]?.name : 'No asignada'}
-            </h4>
+              {/* Acceso más seguro al nombre de la empresa asociada a la pasantía */}
+              <h4>
+                Empresa: {activeInternship.application?.companyName || 'No asignada'}
+              </h4>
               <p>
                 Fecha de inicio:{' '}
                 {activeInternship?.startDate
@@ -176,11 +251,11 @@ const StudentDashboard = () => {
                 <div
                   className="progress-fill"
                   style={{
-                    width: `${(activeInternship?.loggedHours || 0) / 180 * 100}%`,
+                    width: `${((activeInternship?.loggedHours || 0) / REQUIRED_INTERNSHIP_HOURS) * 100}%`,
                   }}
                 ></div>
                 <span className="progress-text">
-                  {activeInternship?.loggedHours || 0} / 180 horas
+                  {activeInternship?.loggedHours || 0} / {REQUIRED_INTERNSHIP_HOURS} horas
                 </span>
               </div>
             </div>
@@ -216,14 +291,7 @@ const StudentDashboard = () => {
             </form>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (application) {
-    return (
-      <div className="student-dashboard">
-        <h2>Panel de Estudiante</h2>
+      ) : application ? (
         <div className="application-status">
           <h3>Estado de tu Postulación</h3>
           <div className="status-card">
@@ -236,90 +304,83 @@ const StudentDashboard = () => {
             </p>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="student-dashboard">
-      <h2>Panel de Estudiante</h2>
-      <div className="application-form">
-        <h3>Postular a Pasantía</h3>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="nombre">Nombre Completo:</label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              value={curriculum.nombre}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="estudios">Estudios:</label>
-            <textarea
-              id="estudios"
-              name="estudios"
-              value={curriculum.estudios}
-              onChange={handleInputChange}
-              required
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <label htmlFor="experiencia">Experiencia:</label>
-            <textarea
-              id="experiencia"
-              name="experiencia"
-              value={curriculum.experiencia}
-              onChange={handleInputChange}
-              placeholder="Describe tu experiencia laboral o académica"
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <label htmlFor="habilidades">Habilidades:</label>
-            <textarea
-              id="habilidades"
-              name="habilidades"
-              value={curriculum.habilidades}
-              onChange={handleInputChange}
-              placeholder="Ejemplo: trabajo en equipo, liderazgo, manejo de herramientas"
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <label htmlFor="sobreMi">Sobre Mí:</label>
-            <textarea
-              id="sobreMi"
-              name="sobreMi"
-              value={curriculum.sobreMi}
-              onChange={handleInputChange}
-              placeholder="Describe un poco sobre ti y tus intereses"
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <label htmlFor="selectedCompany">Seleccionar Empresa:</label>
-            <select
-              id="selectedCompany"
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-              required
-            >
-              <option value="">-- Seleccione una empresa --</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" className="submit-button">
-            Enviar Postulación
-          </button>
-        </form>
-
-
-      </div>
+      ) : (
+        <div className="application-form">
+          <h3>Postular a Pasantía</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="nombre">Nombre Completo:</label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                value={curriculum.nombre}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="estudios">Estudios:</label>
+              <textarea
+                id="estudios"
+                name="estudios"
+                value={curriculum.estudios}
+                onChange={handleInputChange}
+                required
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="experiencia">Experiencia:</label>
+              <textarea
+                id="experiencia"
+                name="experiencia"
+                value={curriculum.experiencia}
+                onChange={handleInputChange}
+                placeholder="Describe tu experiencia laboral o académica"
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="habilidades">Habilidades:</label>
+              <textarea
+                id="habilidades"
+                name="habilidades"
+                value={curriculum.habilidades}
+                onChange={handleInputChange}
+                placeholder="Ejemplo: trabajo en equipo, liderazgo, manejo de herramientas"
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="sobreMi">Sobre Mí:</label>
+              <textarea
+                id="sobreMi"
+                name="sobreMi"
+                value={curriculum.sobreMi}
+                onChange={handleInputChange}
+                placeholder="Describe un poco sobre ti y tus intereses"
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="selectedCompany">Seleccionar Empresa:</label>
+              <select
+                id="selectedCompany"
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                required
+              >
+                <option value="">-- Seleccione una empresa --</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="submit-button">
+              Enviar Postulación
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
