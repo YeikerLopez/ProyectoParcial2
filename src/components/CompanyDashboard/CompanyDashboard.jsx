@@ -6,47 +6,55 @@ const CompanyDashboard = () => {
   const { user } = useAuth();
   const [approvedApplications, setApprovedApplications] = useState([]);
   const [activeInternships, setActiveInternships] = useState([]);
-  const [students, setStudents] = useState([]); // Guardar los estudiantes
+  const [setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const fetchApprovedApplications = async (companyId) => {
+    const response = await fetch(
+      `http://localhost:3001/applications?companyId=${companyId}&status=approved`
+    );
+    return await response.json();
+  };
+
+  const fetchInternships = async (companyId) => {
+    const response = await fetch(
+      `http://localhost:3001/internships?companyId=${companyId}`
+    );
+    return await response.json();
+  };
+
+  const fetchStudents = async (studentIds) => {
+    const uniqueIds = [...new Set(studentIds)];
+    const query = uniqueIds.map(id => `id=${id}`).join('&');
+    const response = await fetch(`http://localhost:3001/users?${query}`);
+    return await response.json();
+  };
+
+  const mergeInternshipsWithStudents = (internships, students) => {
+    return internships.map(internship => {
+      const student = students.find(s => s.id === internship.studentId);
+      return {
+        ...internship,
+        studentName: student ? student.name : 'Estudiante no disponible'
+      };
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Obtener las aplicaciones aprobadas
-        const approvedResponse = await fetch(
-          `http://localhost:3001/applications?companyId=${user.id}&status=approved`
-        );
-        const approvedData = await approvedResponse.json();
+        const approvedData = await fetchApprovedApplications(user.id);
         setApprovedApplications(approvedData);
 
-        // Obtener las pasantías activas
-        const internshipsResponse = await fetch(
-          `http://localhost:3001/internships?companyId=${user.id}`
-        );
-        const internshipsData = await internshipsResponse.json();
-
-        // Obtener los estudiantes asociados a las pasantías
-        const studentIds = internshipsData.map((internship) => internship.studentId);
-        const uniqueStudentIds = [...new Set(studentIds)];
-        
-        const studentsResponse = await fetch(
-          `http://localhost:3001/users?id=${uniqueStudentIds.join('&id=')}`
-        );
-        const studentsData = await studentsResponse.json();
+        const internshipsData = await fetchInternships(user.id);
+        const studentIds = internshipsData.map(i => i.studentId);
+        const studentsData = await fetchStudents(studentIds);
         setStudents(studentsData);
 
-        // Asociar los estudiantes a las pasantías
-        const internshipsWithStudents = internshipsData.map((internship) => {
-          const student = studentsData.find(student => student.id === internship.studentId);
-          return {
-            ...internship,
-            studentName: student ? student.name : 'Estudiante no disponible'
-          };
-        });
-
+        const internshipsWithStudents = mergeInternshipsWithStudents(internshipsData, studentsData);
         setActiveInternships(internshipsWithStudents);
       } catch (err) {
         setError('Error al cargar los datos');
@@ -244,7 +252,7 @@ const CompanyDashboard = () => {
                       <h5>Registro de Actividades</h5>
                       <ul className="log-list">
                         {internship.workLog.map((log, index) => (
-                          <li key={index} className="log-item">
+                          <li key={`${registro.date}-${registro.description}`} className="elementoDeRegistro">
                             <div className="log-header">
                               <span className="log-date">
                                 {new Date(log.date).toLocaleDateString()}
